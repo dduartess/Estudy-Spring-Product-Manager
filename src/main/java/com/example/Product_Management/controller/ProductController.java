@@ -3,7 +3,6 @@ package com.example.Product_Management.controller;
 import com.example.Product_Management.dto.ProductRequestDTO;
 import com.example.Product_Management.dto.ProductResponseDTO;
 import com.example.Product_Management.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
