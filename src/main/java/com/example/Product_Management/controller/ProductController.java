@@ -1,6 +1,7 @@
 package com.example.Product_Management.controller;
 
-import com.example.Product_Management.model.Product;
+import com.example.Product_Management.dto.ProductRequestDTO;
+import com.example.Product_Management.dto.ProductResponseDTO;
 import com.example.Product_Management.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,21 +14,24 @@ import java.util.UUID;
 @RequestMapping("/products")
 public class ProductController {
 
-    @Autowired
-    private ProductService service;
+    private final ProductService service;
+
+    public ProductController(ProductService service) {
+        this.service = service;
+    }
 
     @PostMapping
-    public Product save(@RequestBody Product product) {
-        return service.createNewProduct(product);
+    public ProductResponseDTO save(@RequestBody ProductRequestDTO dto) {
+        return service.createNewProduct(dto);
     }
 
     @GetMapping
-    public List<Product> getAllProducts(){
+    public List<ProductResponseDTO> getAllProducts(){
         return service.getAllProducts();
     }
 
-    @GetMapping("/id")
-    public Product getProductById(@PathVariable UUID id){
+    @GetMapping("/{id}")
+    public ProductResponseDTO getProductById(@PathVariable UUID id){
         return service.getProductById(id);
     }
 
@@ -37,11 +41,11 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProductById(
+    public ResponseEntity<ProductResponseDTO> updateProductById(
             @PathVariable UUID id,
-            @RequestBody Product product
+            @RequestBody ProductRequestDTO dto
     ) {
-        Product updated = service.updateProductById(id, product);
+        ProductResponseDTO updated = service.updateProductById(id, dto);
         return ResponseEntity.ok(updated);
     }
 }

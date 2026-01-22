@@ -1,5 +1,7 @@
 package com.example.Product_Management.service;
 
+import com.example.Product_Management.dto.ProductRequestDTO;
+import com.example.Product_Management.dto.ProductResponseDTO;
 import com.example.Product_Management.exception.ResourceNotFoundException;
 import com.example.Product_Management.model.Product;
 import com.example.Product_Management.repository.ProductRepository;
@@ -13,34 +15,51 @@ public class ProductService {
 
     private final ProductRepository repository;
 
-    public ProductService(ProductRepository Repository) {
-        this.repository = Repository;
+    public ProductService(ProductRepository repository) {
+        this.repository = repository;
     }
 
-    public List<Product> getAllProducts(){
-        return repository.findAll();
+    private ProductResponseDTO toDTO(Product p) {
+        return new ProductResponseDTO(
+                p.getId(),
+                p.getNameProduct(),
+                p.getDescriptionProduct(),
+                p.getPriceProduct()
+        );
     }
 
-    public Product getProductById(UUID id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Produto não encontrado com id: " + id
-                ));
+    public List<ProductResponseDTO> getAllProducts() {
+        return repository.findAll().stream().map(this::toDTO).toList();
     }
 
-    public Product createNewProduct(Product product) {
-        return repository.save(product);
+    public ProductResponseDTO getProductById(UUID id) {
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com id: " + id));
+        return toDTO(product);
+    }
+
+    public ProductResponseDTO createNewProduct(ProductRequestDTO dto) {
+        Product product = new Product();
+        product.setNameProduct(dto.nameProduct());
+        product.setDescriptionProduct(dto.descriptionProduct());
+        product.setPriceProduct(dto.priceProduct());
+        return toDTO(repository.save(product));
     }
 
     public void deleteProductById(UUID id) {
-        repository.deleteById(id);
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com id: " + id));
+        repository.delete(product);
     }
 
-    public Product updateProductById(UUID id, Product product) {
-        Product oldProduct = getProductById(id);
-        oldProduct.setNameProduct(product.getNameProduct());
-        oldProduct.setDescriptionProduct(product.getDescriptionProduct());
-        oldProduct.setPriceProduct(product.getPriceProduct());
-        return repository.save(oldProduct);
+    public ProductResponseDTO updateProductById(UUID id, ProductRequestDTO dto) {
+        Product oldProduct = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com id: " + id));
+
+        oldProduct.setNameProduct(dto.nameProduct());
+        oldProduct.setDescriptionProduct(dto.descriptionProduct());
+        oldProduct.setPriceProduct(dto.priceProduct());
+
+        return toDTO(repository.save(oldProduct));
     }
 }
