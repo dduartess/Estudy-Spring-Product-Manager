@@ -1,4 +1,4 @@
-package com.example.Product_Management.model;
+package com.example.Product_Management.model.products;
 
 import jakarta.persistence.*;
 
@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "tb_products")
-public class Product {
+public class    Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
