@@ -3,7 +3,7 @@ package com.example.Product_Management.service;
 import com.example.Product_Management.dto.ProductRequestDTO;
 import com.example.Product_Management.dto.ProductResponseDTO;
 import com.example.Product_Management.exception.ResourceNotFoundException;
-import com.example.Product_Management.model.Product;
+import com.example.Product_Management.model.products.Product;
 import com.example.Product_Management.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
