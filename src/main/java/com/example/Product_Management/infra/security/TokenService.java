@@ -4,13 +4,16 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.Product_Management.model.user.User;
-import com.nimbusds.jose.Algorithm;
-import com.nimbusds.jwt.JWT;
 
-import lombok.Value;
 
 @Service
 public class TokenService {
