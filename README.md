@@ -1,8 +1,10 @@
 # 🛒 Product Management API
 
-API REST desenvolvida com **Spring Boot** para gerenciamento de produtos, implementando **CRUD completo**, utilizando **DTOs**, **Spring Data JPA**, **PostgreSQL em Docker** e boas práticas de arquitetura.
+API REST desenvolvida com **Spring Boot** para gerenciamento de produtos, evoluída para um **sistema seguro com autenticação e autorização via Spring Security + JWT (Stateless)**.
 
-Projeto voltado para **aprendizado**, **organização de código**, **padrões REST** e **preparação para consumo por frontends** (React, Angular, etc).
+O projeto começou como um CRUD simples e foi **progressivamente evoluído**, refletindo decisões reais de arquitetura, separação de responsabilidades e boas práticas usadas no mercado.
+
+Voltado para **aprendizado prático**, **organização de código**, **segurança de APIs REST** e **preparação para consumo por frontends** (React, Angular, etc).
 
 ---
 
@@ -12,6 +14,8 @@ Projeto voltado para **aprendizado**, **organização de código**, **padrões R
 - Spring Boot
 - Spring Web
 - Spring Data JPA
+- Spring Security
+- JWT (JSON Web Token)
 - Hibernate
 - PostgreSQL
 - Docker & Docker Compose
@@ -19,9 +23,32 @@ Projeto voltado para **aprendizado**, **organização de código**, **padrões R
 
 ---
 
-## 🧱 Arquitetura do Projeto
+## 🔐 Segurança & Autenticação
 
-O projeto segue o padrão de camadas:
+A aplicação utiliza **Spring Security com autenticação JWT Stateless**, ou seja:
+
+- A API **não mantém sessão**
+- Cada requisição protegida exige um **token JWT válido**
+- O token carrega a identidade do usuário
+- A segurança é aplicada por **filtros**, não por sessões HTTP
+
+### 📌 Fluxo de autenticação
+
+```
+Login → Geração do Token JWT
+Cliente → Envia JWT no Header Authorization
+Filtro de Segurança → Valida Token
+Spring Security → Libera ou bloqueia acesso
+```
+
+Header esperado:
+```
+Authorization: Bearer <token>
+```
+
+---
+
+## 🧱 Arquitetura do Projeto
 
 ```
 controller → service → repository → database
@@ -29,115 +56,38 @@ controller → service → repository → database
      DTOs     Entities
 ```
 
-### 📦 Estrutura de Pacotes
+---
+
+## 📦 Estrutura de Pacotes
 
 ```
 com.example.Product_Management
  ├── controller
- │    └── ProductController
  ├── service
- │    └── ProductService
  ├── repository
- │    └── ProductRepository
  ├── model
- │    └── Product
  ├── dto
- │    ├── ProductRequestDTO
- │    └── ProductResponseDTO
+ ├── infra.security
  └── exception
-      └── ResourceNotFoundException
 ```
 
 ---
 
-## 🔁 Uso de DTO
+## 📌 Endpoints
 
-A API não expõe diretamente a entidade do banco de dados.
+### 🔹 Login
+POST `/auth/login`
 
-- **ProductRequestDTO** → Entrada de dados (`POST`, `PUT`)
-- **ProductResponseDTO** → Saída de dados (`GET`, respostas de `POST` e `PUT`)
-
-Fluxo de dados:
-
-```
-Cliente → RequestDTO → Service → Entity → Repository
-Repository → Entity → Service → ResponseDTO → Cliente
-```
-
----
-
-## 📌 Endpoints da API
-
-### 🔹 Criar produto
-**POST** `/products`
-
-Request Body:
-```json
-{
-  "nameProduct": "Teclado",
-  "descriptionProduct": "Teclado mecânico",
-  "priceProduct": 199.90
-}
-```
-
-Response:
-```json
-{
-  "id": "uuid-gerado",
-  "nameProduct": "Teclado",
-  "descriptionProduct": "Teclado mecânico",
-  "priceProduct": 199.90
-}
-```
-
-Status: **201 Created**
-
----
-
-### 🔹 Listar todos os produtos
-**GET** `/products`
-
-Status: **200 OK**
-
----
-
-### 🔹 Buscar produto por ID
-**GET** `/products/{id}`
-
-Status:
-- **200 OK**
-- **404 Not Found**
-
----
-
-### 🔹 Atualizar produto
-**PUT** `/products/{id}`
-
-Request Body:
-```json
-{
-  "nameProduct": "Produto atualizado",
-  "descriptionProduct": "Nova descrição",
-  "priceProduct": 299.90
-}
-```
-
-Status: **200 OK**
-
----
-
-### 🔹 Deletar produto
-**DELETE** `/products/{id}`
-
-Status:
-- **204 No Content**
-- **404 Not Found**
+### 🔹 Produtos (Protegidos)
+- POST `/products`
+- GET `/products`
+- GET `/products/{id}`
+- PUT `/products/{id}`
+- DELETE `/products/{id}`
 
 ---
 
 ## 🐳 Docker & PostgreSQL
-
-### 📦 docker-compose.yml
 
 ```yaml
 version: "3.8"
@@ -162,9 +112,7 @@ volumes:
 
 ---
 
-## ⚙️ Configuração do Spring Boot
-
-Arquivo `application.properties`:
+## ⚙️ application.properties
 
 ```properties
 spring.application.name=Product-Management
@@ -176,56 +124,22 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 spring.datasource.url=jdbc:postgresql://localhost:5432/product-manager
 spring.datasource.username=postgres
 spring.datasource.password=postgres
+
+api.security.token.secret=seu-segredo-jwt
 ```
 
 ---
 
-## ▶️ Como Executar o Projeto
+## ▶️ Como Executar
 
-### 1️⃣ Subir o PostgreSQL com Docker
 ```bash
 docker compose up -d
-```
-
-### 2️⃣ Rodar a aplicação
-```bash
 ./mvnw spring-boot:run
 ```
-
-A aplicação ficará disponível em:
-```
-http://localhost:8080
-```
-
----
-
-## 🔍 Acesso ao Banco de Dados
-
-- Host: localhost
-- Porta: 5432
-- Database: product-manager
-- Usuário: postgres
-- Senha: postgres
-
-Ferramentas recomendadas:
-- DBeaver
-- pgAdmin
-- DataGrip
-
----
-
-## 📈 Próximas Evoluções
-
-- Validações com `@Valid`
-- Padronização de erros em JSON
-- Paginação e ordenação
-- Autenticação com Spring Security
-- Testes unitários e de integração
-- Integração com frontend React
 
 ---
 
 ## 👨‍💻 Autor
 
-**Daniel Duarte**  
-Projeto desenvolvido para estudo e evolução em **Java + Spring Boot**.
+Daniel Duarte  
+Projeto para estudo e evolução em **Java + Spring Boot + Spring Security**
